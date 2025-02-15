@@ -2,7 +2,6 @@
 const products = [
     { id: 1, name: 'Product 1', price: 20.00, description: 'Description for Product 1', image: 'product1.jpg' },
     { id: 2, name: 'Product 2', price: 15.00, description: 'Description for Product 2', image: 'product2.jpg' },
-    // Add more products as needed
 ];
 
 // Cart array to hold added items
@@ -48,6 +47,34 @@ document.getElementById('addToCartButton').addEventListener('click', () => {
     // Close the modal after adding to cart
     document.getElementById('productModal').style.display = 'none';
 
-    // Optionally, you could update a cart icon or show a cart summary here
     alert('Product added to cart!');
+});
+
+// Open the cart modal
+document.getElementById('viewCartButton').addEventListener('click', () => {
+    const cartItemsElement = document.getElementById('cartItems');
+    const totalPriceElement = document.getElementById('totalPrice');
+
+    // Clear any existing cart items
+    cartItemsElement.innerHTML = '';
+
+    // Calculate the total price
+    let totalPrice = 0;
+
+    cart.forEach(item => {
+        const itemElement = document.createElement('div');
+        itemElement.innerHTML = `${item.name} - $${item.price} x ${item.quantity}`;
+        cartItemsElement.appendChild(itemElement);
+        totalPrice += item.price * item.quantity;
+    });
+
+    totalPriceElement.textContent = totalPrice.toFixed(2);
+
+    // Show the cart modal
+    document.getElementById('cartModal').style.display = 'flex';
+});
+
+// Close the cart modal
+document.getElementById('closeCartModal').addEventListener('click', () => {
+    document.getElementById('cartModal').style.display = 'none';
 });
