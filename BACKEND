@@ -1,0 +1,55 @@
+const express = require('express');
+const nodemailer = require('nodemailer');
+const app = express();
+
+app.use(express.json());
+app.use(express.static('public'));
+
+let products = [
+  { name: 'Product 1', stock: 10 },
+  { name: 'Product 2', stock: 5 }
+];
+
+app.post('/place-order', (req, res) => {
+  const { firstName, lastName, product1Quantity, product2Quantity } = req.body;
+
+  // Check if enough stock is available
+  if (product1Quantity > products[0].stock || product2Quantity > products[1].stock) {
+    return res.status(400).send('Not enough stock');
+  }
+
+  // Update stock
+  products[0].stock -= product1Quantity;
+  products[1].stock -= product2Quantity;
+
+  // Send email with order details
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'your-email@gmail.com',
+      pass: 'your-email-password'
+    }
+  });
+
+  const mailOptions = {
+    from: 'your-email@gmail.com',
+    to: 'admin-email@example.com',
+    subject: 'New Order Received',
+    text: `Order Details:
+    Name: ${firstName} ${lastName}
+    Product 1 Quantity: ${product1Quantity}
+    Product 2 Quantity: ${product2Quantity}
+    Time: ${new Date().toLocaleString()}`
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      return res.status(500).send('Email not sent');
+    }
+    res.send('Order placed successfully');
+  });
+});
+
+app.listen(3000, () => {
+  console.log('Server running on http://localhost:3000');
+});
